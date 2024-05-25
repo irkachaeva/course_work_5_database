@@ -1,5 +1,4 @@
 from src.hh_api import HeadHunterAPI
-from src.hh_employer import HHemployer
 import json
 import os.path
 
@@ -17,7 +16,6 @@ companies = [1740,  # Яндекс
              84585,  # Авито
              1942330,  # Пятерочка
              49357,  # Тандер (Магнит)
-
              2180,  # Ozon
              1272486,  # Сбермаркет
              87021,  # WILDBERRIES
