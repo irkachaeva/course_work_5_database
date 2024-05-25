@@ -1,16 +1,31 @@
-# This is a sample Python script.
+from src.hh_api import HeadHunterAPI
+from src.hh_employer import HHemployer
+import json
+import os.path
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def write_vacancies(data):
+    path = os.path.join(os.getcwd(), 'data', 'employers.json')
+    with open(path, "w", encoding="utf-8") as file:
+        add_vacancies = []
+        for vacancy in data:
+            add_vacancies.append(vacancy)
+        json.dump(add_vacancies, file, ensure_ascii=False, indent=4)
+        return
 
+companies = [1740,  # Яндекс
+             78638,  # Тинькофф
+             84585,  # Авито
+             1942330,  # Пятерочка
+             49357,  # Тандер (Магнит)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+             2180,  # Ozon
+             1272486,  # Сбермаркет
+             87021,  # WILDBERRIES
+             1122462,  # Skyeng
+             15478  # VK
+            ]
 
+hh_e = HeadHunterAPI()
+emp = hh_e.load_vacancies(companies)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+write_vacancies(emp)
