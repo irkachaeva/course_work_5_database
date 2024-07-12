@@ -1,18 +1,8 @@
 from src.hh_api import HeadHunterAPI
 import psycopg2
 from src.db_manager import DBManager
-from src.utils import create_db, insert_data
-import json
-import os.path
-
-# def write_vacancies(data):
-#     path = os.path.join(os.getcwd(), 'data', 'employers.json')
-#     with open(path, "w", encoding="utf-8") as file:
-#         add_vacancies = []
-#         for vacancy in data:
-#             add_vacancies.append(vacancy)
-#         json.dump(add_vacancies, file, ensure_ascii=False, indent=4)
-#         return
+from src.utils import create_db, insert_data, get_vacancies
+from config import config
 
 companies = [1740,  # Яндекс
              78638,  # Тинькофф
@@ -25,21 +15,19 @@ companies = [1740,  # Яндекс
              1122462,  # Skyeng
              15478  # VK
             ]
-
-
-
 params = config()
-hh_e = HeadHunterAPI()
-vacancies = hh_e.load_vacancies(companies)
+vacancies = HeadHunterAPI().load_vacancies(companies)
 
-create_db('best_vacancies', config())
-conn = psycopg2.connect(dbname='best_vacancies', **params)
+bd_name = 'best_vacancies'
+create_db(bd_name, params)
+conn = psycopg2.connect(dbname=bd_name, **params)
+
 insert_data(conn, vacancies)
 
 
 def main():
     # Инициализация менеджера базы данных
-    db_manager = DBManager("best_vacancies", config())
+    db_manager = DBManager(bd_name)
     while True:
         print(f'Выберите запрос либо введите слово "стоп": \n'
               f'1 - Список всех компаний и количество вакансий у каждой компании\n'

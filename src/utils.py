@@ -1,7 +1,4 @@
 import psycopg2
-from psycopg2 import connect
-import sys
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 
 def create_db(name, params):
@@ -17,11 +14,19 @@ def create_db(name, params):
         conn = psycopg2.connect(dbname=name, **params)
         with conn.cursor() as cur:
             cur.execute(f'CREATE TABLE IF NOT EXISTS employers '
-                        f'(company_id int, company_name varchar(100), company_url varchar (100))')
+                        f'(company_id int, '
+                        f'company_name varchar(100), '
+                        f'company_url varchar (100))')
         with conn.cursor() as cur:
-            cur.execute(f'CREATE TABLE IF NOT EXISTS vacancies (company_name varchar (100), job_title varchar(100), '
-                        f'link_to_vacancy varchar(100), salary_from int, currency varchar(10), '
-                        f'description text, requirement text)')
+            cur.execute(f'CREATE TABLE IF NOT EXISTS vacancies '
+                        f'(company_id int, '
+                        f'company_name varchar (100), '
+                        f'job_title varchar(100), '
+                        f'link_to_vacancy varchar(100), '
+                        f'salary_from int, '
+                        f'currency varchar(10), '
+                        f'description text, '
+                        f'requirement text)')
         conn.commit()
         conn.close()
 
@@ -31,22 +36,59 @@ def create_db(name, params):
         return f"Произошла ошибка: {e}"
 
 
-def insert_data(conn, vacancies, info: str):
+def insert_data(conn, vacancies):
     """Сохранение данных о компаниях и вакансиях в БД pgAdmin."""
 
-    insert_query = """
-    INSERT INTO vacancies (company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """
     with conn.cursor() as cur:
-        for record in vacancies:
+        for item in vacancies:
+            employer_data = item['employer']
             cur.execute(
                 """
                 INSERT INTO employers (company_id, company_name, company_url) VALUES (%s, %s, %s)
                 """,
-                (record['company_id'], record['company_name'], record['company_url']))
-            cur.execute(insert_query, (record['company_name'], record['job_title'], record['link_to_vacancy'],
-                                       record['salary_from'], record['currency'], record['description'],
-                                       record['requirement']))
+                (employer_data['id'],
+                 employer_data['name'],
+                 employer_data['alternate_url']
+                 )
+            )
+            if item['salary'] is None:
+                salary_from = 0
+                currency = 0
+            else:
+                salary_from = item['salary'].get('from')
+                currency = item['salary'].get('currency')
+            cur.execute(
+                """
+                INSERT INTO vacancies (company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """,
+                (employer_data['name'],
+                 item['name'],
+                 item['apply_alternate_url'],
+                 salary_from,
+                 currency,
+                 item['snippet'].get('responsibility'),
+                 item['snippet'].get('requirement')))
         conn.commit()
         conn.close()
+
+
+def get_vacancies(vacancies):
+    list_vacancies = []
+    for item in vacancies:
+        company_id = int(item['employer']['id'])
+        company_name = item['employer']['name']
+        company_url = item['employer']['alternate_url']
+        job_title = item['name']
+        link_to_vacancy = item['apply_alternate_url']
+        if item['salary'] is None:
+            salary_from = 0
+            currency = 0
+        else:
+            salary_from = item['salary'].get('from')
+            currency = item['salary'].get('currency')
+        description = item['snippet'].get('responsibility')
+        requirement = item['snippet'].get('requirement')
+        item = [company_id, company_name, company_url, job_title, link_to_vacancy, salary_from, currency, description, requirement]
+    list_vacancies.append(item)
+    return list_vacancies
