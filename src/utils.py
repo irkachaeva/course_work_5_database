@@ -37,7 +37,7 @@ def create_db(name, params):
 
 
 def insert_data(conn, vacancies):
-    """Сохранение данных о компаниях и вакансиях в БД pgAdmin."""
+    """Сохранение данных о компаниях и вакансиях в БД pgAdmin. """
 
     with conn.cursor() as cur:
         for item in vacancies:
