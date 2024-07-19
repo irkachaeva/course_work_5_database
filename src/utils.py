@@ -55,7 +55,10 @@ def insert_data(conn, vacancies):
                 salary_from = 0
                 currency = 0
             else:
-                salary_from = item['salary'].get('from')
+                if item['salary'].get('from') is None:
+                    salary_from = 0
+                else:
+                    salary_from = int(item['salary'].get('from'))
                 currency = item['salary'].get('currency')
             cur.execute(
                 """

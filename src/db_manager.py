@@ -15,9 +15,11 @@ class DBManager:
         with self.conn:
             with self.conn.cursor() as cursor:
                 cursor.execute(
-                    'SELECT vacancies.company_name, COUNT(job_title) FROM vacancies JOIN employers '
-                    'ON employers.company_id=vacancies.company_id GROUP BY vacancies.company_name '
-                    'ORDER BY COUNT(job_title) DESC')
+                    'SELECT vacancies.company_name, COUNT(job_title) AS vacancy_count'
+                    'FROM vacancies'
+                    'JOIN employers ON employers.company_id=vacancies.company_id'
+                    'GROUP BY vacancies.company_name'
+                    'ORDER BY vacancy_count DESC')
                 data = cursor.fetchall()
         return data
 
