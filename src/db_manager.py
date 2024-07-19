@@ -14,14 +14,13 @@ class DBManager:
         """
         with self.conn:
             with self.conn.cursor() as cursor:
-                cursor.execute(
-                    'SELECT vacancies.company_name, COUNT(job_title) AS vacancy_count'
-                    'FROM vacancies'
-                    'JOIN employers ON employers.company_id=vacancies.company_id'
-                    'GROUP BY vacancies.company_name'
-                    'ORDER BY vacancy_count DESC')
+                cursor.execute("""
+                    SELECT vacancies.company_name, COUNT(vacancies.job_title) AS vacancies_count
+                    FROM vacancies
+                    GROUP BY vacancies.company_name
+                    """)
                 data = cursor.fetchall()
-        return data
+        return print(data)
 
     def get_all_vacancies(self):
         """
@@ -30,9 +29,10 @@ class DBManager:
         """
         with self.conn:
             with self.conn.cursor() as cursor:
-                cursor.execute(
-                    'SELECT vacancies.company_name, job_title, salary_from, link_to_vacancy FROM vacancies  '
-                    'JOIN employers ON employers.company_id=vacancies.company_id ORDER BY company_name')
+                cursor.execute("""
+                    SELECT vacancies.company_name, job_title, salary_from, link_to_vacancy 
+                    FROM vacancies  
+                    """)
                 data = cursor.fetchall()
         return data
 
@@ -42,8 +42,10 @@ class DBManager:
         """
         with self.conn:
             with self.conn.cursor() as cursor:
-                cursor.execute(
-                    'SELECT job_title, AVG(salary_from) FROM vacancies GROUP BY job_title')
+                cursor.execute("""
+                    SELECT AVG(salary_from) 
+                    FROM vacancies
+                    """)
                 data = cursor.fetchall()
         return data
 
@@ -55,9 +57,12 @@ class DBManager:
 
         with self.conn:
             with self.conn.cursor() as cursor:
-                cursor.execute(
-                    'SELECT * FROM vacancies WHERE salary_from > (SELECT AVG(salary_from) FROM vacancies) '
-                    'ORDER BY salary_from')
+                cursor.execute("""
+                    SELECT vacancies.company_name, job_title, salary_from, link_to_vacancy 
+                    FROM vacancies 
+                    WHERE salary_from > (SELECT AVG(salary_from) FROM vacancies) 
+                    ORDER BY salary_from
+                    """)
                 data = cursor.fetchall()
         return data
 
@@ -66,8 +71,10 @@ class DBManager:
         :return: получает список всех вакансий, в названии
         которых содержатся переданные в метод слова, например python.
         """
-        with self.conn.cursor() as cursor:
-            cursor.execute(
-                f"SELECT * FROM vacancies WHERE LOWER(job_title) LIKE '%{keyword}%'")
-        data = cursor.fetchall()
+        with self.conn:
+            with self.conn.cursor() as cursor:
+                cursor.execute(
+                    f"SELECT * FROM vacancies WHERE LOWER(job_title) LIKE '%{keyword}%'"
+                )
+                data = cursor.fetchall()
         return data
