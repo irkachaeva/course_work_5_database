@@ -62,7 +62,8 @@ def insert_data(conn, vacancies):
                 currency = item['salary'].get('currency')
             cur.execute(
                 """
-                INSERT INTO vacancies (company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
+                INSERT INTO vacancies 
+                (company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """,
                 (employer_data['name'],
@@ -92,6 +93,14 @@ def get_vacancies(vacancies):
             currency = item['salary'].get('currency')
         description = item['snippet'].get('responsibility')
         requirement = item['snippet'].get('requirement')
-        item = [company_id, company_name, company_url, job_title, link_to_vacancy, salary_from, currency, description, requirement]
+        item = [company_id,
+                company_name,
+                company_url,
+                job_title,
+                link_to_vacancy,
+                salary_from,
+                currency,
+                description,
+                requirement]
     list_vacancies.append(item)
     return list_vacancies

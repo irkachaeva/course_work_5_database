@@ -1,7 +1,7 @@
 from src.hh_api import HeadHunterAPI
 import psycopg2
 from src.db_manager import DBManager
-from src.utils import create_db, insert_data, get_vacancies
+from src.utils import create_db, insert_data
 from config import config
 
 companies = [1740,  # Яндекс
@@ -14,7 +14,8 @@ companies = [1740,  # Яндекс
              87021,  # WILDBERRIES
              1122462,  # Skyeng
              15478  # VK
-            ]
+             ]
+
 params = config()
 vacancies = HeadHunterAPI().load_vacancies(companies)
 
