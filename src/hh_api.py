@@ -2,7 +2,9 @@ import requests
 
 
 class HeadHunterAPI:
-
+    """
+    Класс для подключения к HH api  преобразования полученных данных
+    """
     def __init__(self):
         self.url = 'https://api.hh.ru/vacancies'
         self.headers = {'User-Agent': 'HH-User-Agent'}
