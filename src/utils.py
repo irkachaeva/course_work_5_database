@@ -14,19 +14,20 @@ def create_db(name, params):
         conn = psycopg2.connect(dbname=name, **params)
         with conn.cursor() as cur:
             cur.execute(f'CREATE TABLE IF NOT EXISTS employers '
-                        f'(company_id int, '
+                        f'(company_id int, PRIMARY KEY'
                         f'company_name varchar(100), '
                         f'company_url varchar (100))')
         with conn.cursor() as cur:
             cur.execute(f'CREATE TABLE IF NOT EXISTS vacancies '
-                        f'(company_id int, '
+                        f'(company_id int, PRIMARY KEY,'
                         f'company_name varchar (100), '
                         f'job_title varchar(100), '
                         f'link_to_vacancy varchar(100), '
                         f'salary_from int, '
                         f'currency varchar(10), '
                         f'description text, '
-                        f'requirement text)')
+                        f'requirement text,'
+                        f'foreign key(company_name) references employers(company_name)')
         conn.commit()
         conn.close()
 
