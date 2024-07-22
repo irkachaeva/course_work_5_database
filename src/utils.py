@@ -14,19 +14,20 @@ def create_db(name, params):
         conn = psycopg2.connect(dbname=name, **params)
         with conn.cursor() as cur:
             cur.execute(f'CREATE TABLE IF NOT EXISTS employers '
-                        f'(company_id int, '
+                        f'(company_id int, PRIMARY KEY'
                         f'company_name varchar(100), '
                         f'company_url varchar (100))')
         with conn.cursor() as cur:
             cur.execute(f'CREATE TABLE IF NOT EXISTS vacancies '
-                        f'(company_id int, '
+                        f'(company_id int, PRIMARY KEY,'
                         f'company_name varchar (100), '
                         f'job_title varchar(100), '
                         f'link_to_vacancy varchar(100), '
                         f'salary_from int, '
                         f'currency varchar(10), '
                         f'description text, '
-                        f'requirement text)')
+                        f'requirement text,'
+                        f'foreign key(company_name) references employers(company_name)')
         conn.commit()
         conn.close()
 
@@ -63,10 +64,11 @@ def insert_data(conn, vacancies):
             cur.execute(
                 """
                 INSERT INTO vacancies 
-                (company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                (company_id, company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
-                (employer_data['name'],
+                (employer_data['id'],
+                 employer_data['name'],
                  item['name'],
                  item['apply_alternate_url'],
                  salary_from,

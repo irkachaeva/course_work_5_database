@@ -3,7 +3,9 @@ import config
 
 
 class DBManager:
-
+    """
+    Класс для работы с базой данных: подключение к БД, создание/изменение таблиц
+    """
     def __init__(self, db_name):
         self.db_name = db_name
         self.conn = psycopg2.connect(dbname=self.db_name, **config.config())
@@ -14,10 +16,19 @@ class DBManager:
         """
         with self.conn:
             with self.conn.cursor() as cursor:
+            #     cursor.execute("""
+            #         SELECT vacancies.company_name, COUNT(vacancies.job_title) AS vacancies_count
+            #         FROM vacancies
+            #         GROUP BY vacancies.company_name
+            #
+            #         """)
                 cursor.execute("""
                     SELECT vacancies.company_name, COUNT(vacancies.job_title) AS vacancies_count
                     FROM vacancies
+                    
+                    JOIN employers ON vacancies.company_id = employers.company_id
                     GROUP BY vacancies.company_name
+
                     """)
                 data = cursor.fetchall()
         return print(data)
