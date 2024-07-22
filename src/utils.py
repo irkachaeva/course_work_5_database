@@ -64,10 +64,11 @@ def insert_data(conn, vacancies):
             cur.execute(
                 """
                 INSERT INTO vacancies 
-                (company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                (company_id, company_name, job_title, link_to_vacancy, salary_from, currency, description, requirement)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
-                (employer_data['name'],
+                (employer_data['id'],
+                 employer_data['name'],
                  item['name'],
                  item['apply_alternate_url'],
                  salary_from,
